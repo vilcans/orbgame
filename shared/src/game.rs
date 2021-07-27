@@ -159,8 +159,8 @@ impl GameWorld {
         }
     }
 
-    /// Create a new Player object, insert it into physics world, but not in the [`GameWorld::players`] map.
-    fn create_player(&mut self) -> Player {
+    /// Create a new Player object, insert it into physics world and the [`GameWorld::players`] map.
+    fn create_player(&mut self, player_id: PlayerId) {
         let body_handle = self.bodies.insert(
             RigidBodyBuilder::new_dynamic()
                 .translation(vector![10.0, 80.0])
@@ -175,11 +175,12 @@ impl GameWorld {
             body_handle,
             &mut self.bodies,
         );
-        Player {
+        let player = Player {
             body_handle,
             _collider_handle: collider_handle,
             input: Default::default(),
-        }
+        };
+        self.players.insert(player_id, player);
     }
 
     /// Remove a player from the physics world and from [`GameWorld::players`].
@@ -223,8 +224,7 @@ impl World for GameWorld {
                     "Assigning player id {} to client {}",
                     player_id, client_handle
                 );
-                let player = self.create_player();
-                self.players.insert(player_id, player);
+                self.create_player(player_id);
             }
             GameCommand::Input(player_id, command, value) => {
                 let player_input = &mut self.players.get_mut(player_id).unwrap().input;
@@ -245,8 +245,7 @@ impl World for GameWorld {
         // Create objects for all players in the snapshot which are not already in the game world
         for player_id in snapshot_players.difference(&current_players) {
             debug!("Creating player {} from snapshot", player_id);
-            let p = self.create_player();
-            self.players.insert(*player_id, p);
+            self.create_player(*player_id);
         }
 
         // Remove objects for all players that are in the game world but not in the snapshot
