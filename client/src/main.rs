@@ -118,6 +118,7 @@ fn main() {
         .run();
 }
 
+/// Player component.
 struct Player(PlayerId);
 
 fn setup_scene(

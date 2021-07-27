@@ -1,3 +1,6 @@
+//! Main game logic.
+//! Based on https://github.com/ErnWong/crystalorb/blob/master/examples/demo/src/lib.rs
+
 use bevy::prelude::{debug, info};
 use crystalorb::{
     command::Command,
@@ -239,17 +242,20 @@ impl World for GameWorld {
             HashSet::<PlayerId>::from_iter(snapshot.players.iter().map(|(n, _)| *n));
         let current_players = HashSet::from_iter(self.players.keys().copied());
 
+        // Create objects for all players in the snapshot which are not already in the game world
         for player_id in snapshot_players.difference(&current_players) {
             debug!("Creating player {} from snapshot", player_id);
             let p = self.create_player();
             self.players.insert(*player_id, p);
         }
 
+        // Remove objects for all players that are in the game world but not in the snapshot
         for player_id in current_players.difference(&snapshot_players) {
             debug!("Removing player {} not in snapshot", player_id);
             self.remove_player(*player_id);
         }
 
+        // Update players
         for (player_id, player_snapshot) in snapshot.players.iter() {
             let player = self.players.get_mut(player_id).unwrap();
             let body = self.bodies.get_mut(player.body_handle).unwrap();
