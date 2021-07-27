@@ -1,0 +1,11 @@
+[package]
+name = "orbgame-server"
+version = "0.1.0"
+authors = ["Martin Vilcans <martin@librador.com>"]
+edition = "2018"
+
+[dependencies]
+
+[dependencies.orbgame_shared]
+path = "../shared"
+#features = ["render"]
