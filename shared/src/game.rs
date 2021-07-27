@@ -19,6 +19,8 @@ use crate::TIMESTEP;
 
 const GRAVITY: Vector2<Real> = Vector2::new(0.0, -9.81 * 30.0);
 
+/// Identifies a player. Used as key in maps.
+/// Uses the same value as the client's `client_handle`.
 #[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub struct PlayerId(pub u8);
 
@@ -210,16 +212,9 @@ impl World for GameWorld {
     fn apply_command(&mut self, command: &Self::CommandType) {
         match command {
             GameCommand::SpawnPlayer { client_handle } => {
-                let player_id = self
-                    .players
-                    .iter()
-                    .max_by_key(|(id, _)| id.0)
-                    .map(|(n, _)| PlayerId(n.0 + 1))
-                    .unwrap_or(PlayerId(0u8));
-                info!(
-                    "Assigning player id {} to client {}",
-                    player_id, client_handle
-                );
+                let player_id = PlayerId(*client_handle as u8);
+                assert!(!self.players.contains_key(&player_id));
+                info!("Using player id {} for client {}", player_id, client_handle);
                 self.create_player(player_id);
             }
             GameCommand::Input(player_id, command, value) => {
