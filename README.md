@@ -5,6 +5,7 @@ I'm just to learn how to use [crystalorb](https://github.com/ErnWong/crystalorb)
 ![Screenshot](screenshot.png "Screenshot")
 
 Originally based on the example in the [`examples/demo`](https://github.com/ErnWong/crystalorb/tree/master/examples/demo) folder in the crystalorb repo, but this version is not hardcoded for three players, but instead creates a new player ball whenever a player joins.
+Also, this version does not support wasm builds.
 
 ## Building and running
 
