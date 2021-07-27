@@ -14,11 +14,13 @@ use std::{
     fmt::{Debug, Display},
     iter::FromIterator,
 };
-use wasm_bindgen::prelude::*;
 
 use crate::TIMESTEP;
 
 const GRAVITY: Vector2<Real> = Vector2::new(0.0, -9.81 * 30.0);
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct PlayerId(pub u8);
 
 pub struct GameWorld {
     pipeline: PhysicsPipeline,
@@ -44,16 +46,14 @@ pub enum GameCommand {
     Input(PlayerId, PlayerCommand, bool),
 }
 
+impl Command for GameCommand {}
+
 #[derive(Serialize, Deserialize, Default, Debug, Clone, Copy, PartialEq)]
 pub struct PlayerInput {
     pub jump: bool,
     pub left: bool,
     pub right: bool,
 }
-
-#[wasm_bindgen]
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, Eq, Hash)]
-pub struct PlayerId(pub u8);
 
 impl Display for PlayerId {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
@@ -67,7 +67,6 @@ impl PlayerId {
     }
 }
 
-#[wasm_bindgen]
 #[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum PlayerCommand {
     Jump,
@@ -203,10 +202,7 @@ impl World for GameWorld {
 
     fn command_is_valid(command: &Self::CommandType, client_id: usize) -> bool {
         match command {
-            GameCommand::SpawnPlayer { .. } => {
-                info!("AssignPlayer not allowed on client {}", client_id);
-                false
-            }
+            GameCommand::SpawnPlayer { .. } => false,
             GameCommand::Input(player_id, _, _) => player_id.as_usize() == client_id,
         }
     }
@@ -334,8 +330,6 @@ impl Stepper for GameWorld {
         );
     }
 }
-
-impl Command for GameCommand {}
 
 impl DisplayState for GameDisplayState {
     fn from_interpolation(state1: &Self, state2: &Self, t: f64) -> Self {
