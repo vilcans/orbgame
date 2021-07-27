@@ -48,7 +48,6 @@ fn main() {
         ))
         .add_plugin(bevy::log::LogPlugin)
         .add_startup_system(server_setup.system())
-        //.add_system(print_transforms.system())
         .add_system(handle_events.system())
         .run();
 }
@@ -59,13 +58,6 @@ fn server_setup(mut net: ResMut<NetworkResource>) {
     let socket_address = SocketAddr::new(ip_address, SERVER_PORT);
     info!("Starting server on address {}", socket_address);
     net.listen(socket_address, None, None);
-}
-
-#[allow(dead_code)]
-fn print_transforms(transforms: Query<(Entity, &Transform)>) {
-    for (entity, t) in transforms.iter() {
-        info!("Entity {:?} Transform: {:?}", entity, t);
-    }
 }
 
 fn handle_events(

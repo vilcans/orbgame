@@ -110,7 +110,6 @@ fn main() {
         ))
         .add_startup_system(setup_network.system())
         .add_system(player_input.system())
-        //.add_system(print_transforms.system())
         .add_system(bevy::input::system::exit_on_esc_system.system())
         .add_system(show_state.system())
         .add_system(player_view_lifecycle.system())
@@ -150,13 +149,6 @@ fn setup_scene(
         transform: Transform::from_xyz(90.0, 0.0, 0.0),
         ..Default::default()
     });
-}
-
-#[allow(dead_code)]
-fn print_transforms(transforms: Query<(Entity, &Transform)>) {
-    for (entity, t) in transforms.iter() {
-        println!("Entity {:?} Transform: {:?}", entity, t);
-    }
 }
 
 fn setup_network(mut net: ResMut<NetworkResource>) {
